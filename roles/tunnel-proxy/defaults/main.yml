@@ -7,7 +7,7 @@ tunnel_proxy_image: "{{ tunnel_proxy_image_prefix }}/{{ tunnel_proxy_image_name 
 tunnel_proxy_image_pull: yes
 
 # By default, use the Ansible user
-tunnel_proxy_user: "{{ ansible_user | default(ansible_env.SUDO_USER or ansible_user_id) }}"
+tunnel_proxy_user: "{{ ansible_user | default(ansible_env.get('SUDO_USER', ansible_user_id)) }}"
 # By default, we don't use join a pod
 tunnel_proxy_pod: "{{ omit }}"
 # By default, the service has no dependencies
