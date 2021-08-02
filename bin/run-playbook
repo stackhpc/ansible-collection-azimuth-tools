@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -ex
+
+#####
+# This script installs Ansible before executing the specified playbook from this collection
+#####
+
+virtualenv_dir="${VIRTUALENV_DIR:-/usr/local/share/virtualenvs}"
+ansible_venv="$virtualenv_dir/ansible"
+
+if [ -z "$1" ]; then
+    echo "[ERROR] No playbook given" 1>&2
+    exit 1
+fi
+
+# Install Python3
+yum install -y git python3
+
+# Create and activate a virtual environment for Ansible
+mkdir -p "$virtualenv_dir"
+if [ ! -d "$ansible_venv" ]; then
+    python3 -m venv "$ansible_venv"
+fi
+source "$ansible_venv/bin/activate"
+pip install --upgrade pip
+
+# Install the Ansible core
+pip install ansible-core
+
+# Install the collection using Ansible Galaxy
+ansible-galaxy collection install -f git+https://github.com/stackhpc/ansible-collection-cloud-portal-tools.git
+
+# Execute the specified playbook against localhost
+# We use the Python interpreter from the Ansible virtualenv
+exec ansible-playbook \
+  --inventory localhost, \
+  --connection local \
+  --extra-vars "ansible_python_interpreter=$ansible_venv/bin/python" \
+  "stackhpc.cloud_portal_tools.$1"
