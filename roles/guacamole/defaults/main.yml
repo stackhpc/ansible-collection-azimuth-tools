@@ -15,7 +15,7 @@ guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_
 guacamole_client_image_pull: no
 
 # By default, use the connecting user to run the guacamole services
-guacamole_user: "{{ ansible_user }}"
+guacamole_user: "{{ ansible_user | default(ansible_env.SUDO_USER or ansible_user_id) }}"
 
 # By default, use the address of the default interface to communicate with the host from containers
 guacamole_host_address: "{{ ansible_default_ipv4.address }}"
