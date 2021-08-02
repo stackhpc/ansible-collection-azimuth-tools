@@ -1,0 +1,36 @@
+---
+
+#####
+## These tasks install TigerVNC server and perform global configuration
+#####
+
+- name: Install VNC server
+  package:
+    name: tigervnc-server
+    state: present
+
+- name: Write mandatory configuration
+  blockinfile:
+    path: /etc/tigervnc/vncserver-config-mandatory
+    block: |
+      session=gnome
+      MaxCutText=99999999
+
+- name: Ensure systemd override directory exists
+  file:
+    path: /etc/systemd/system/vncserver@.service.d
+    state: directory
+
+- name: Install systemd overrides
+  copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/vncserver@.service.d/
+  loop:
+    - start_order.conf
+    - restart.conf
+  register: vnc_server_start_order
+
+- name: Force systemd to reload units
+  systemd:
+    daemon_reload: yes
+  when: vnc_server_start_order is changed

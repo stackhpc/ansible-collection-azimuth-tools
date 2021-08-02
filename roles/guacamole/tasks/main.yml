@@ -1,0 +1,61 @@
+---
+
+- name: Install and start guacamole pod
+  include_role:
+    name: podman
+    tasks_from: install-systemd-unit
+  vars:
+    podman_service_name: guacamole
+    podman_service_type: pod
+    podman_service_user: "{{ guacamole_user }}"
+
+- name: Install and start guacamole server
+  include_role:
+    name: podman
+    tasks_from: install-systemd-unit
+  vars:
+    podman_service_name: guacamole-server
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_server_image }}"
+    podman_service_user: "{{ guacamole_user }}"
+    podman_service_pod: guacamole
+
+- name: Set up SSH for guacamole user
+  include_tasks: setup-ssh.yml
+
+- name: Set up VNC server for guacamole user
+  include_tasks: setup-vnc.yml
+  when: guacamole_desktop_enabled
+
+- name: Write guacamole user mapping file
+  template:
+    src: user-mapping.xml.j2
+    dest: /etc/guacamole/user-mapping.xml
+
+- name: Transfer ownership of config directory
+  file:
+    path: /etc/guacamole
+    state: directory
+    recurse: yes
+    owner: "{{ guacamole_user }}"
+    group: "{{ guacamole_user }}"
+
+- name: Install and start guacamole client
+  include_role:
+    name: podman
+    tasks_from: install-systemd-unit
+  vars:
+    podman_service_name: guacamole-client
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_client_image }}"
+    podman_service_user: "{{ guacamole_user }}"
+    podman_service_pod: guacamole
+    # Add a soft dependency on the server
+    podman_service_wants:
+      - guacamole-server
+    podman_service_env:
+      GUACAMOLE_HOME: /config
+      GUACD_HOSTNAME: localhost
+    podman_service_volumes:
+      - /etc/guacamole:/config:ro
+    podman_service_restart: yes

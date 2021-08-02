@@ -1,0 +1,12 @@
+---
+
+- name: Install podman packages
+  package:
+    name: podman
+    state: present
+
+- name: Install script for attaching to pod infra containers
+  copy:
+    src: podman-pod-infra-attach.sh
+    dest: /usr/bin/
+    mode: +x

@@ -1,0 +1,14 @@
+---
+
+- name: "Install systemd unit for {{ podman_service_name }}"
+  template:
+    src: systemd.{{ podman_service_type }}.service.j2
+    dest: /etc/systemd/system/{{ podman_service_name }}.service
+  register: podman_systemd_unit
+
+- name: "Ensure {{ podman_service_name }} is started and enabled"
+  systemd:
+    name: "{{ podman_service_name }}.service"
+    state: "{% if podman_systemd_unit is changed or podman_service_restart %}restarted{% else %}started{% endif %}"
+    enabled: yes
+    daemon_reload: "{{ podman_systemd_unit is changed }}"

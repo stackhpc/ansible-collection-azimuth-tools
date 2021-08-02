@@ -1,0 +1,7 @@
+---
+
+collections:
+  - containers.podman
+
+dependencies:
+  - role: podman

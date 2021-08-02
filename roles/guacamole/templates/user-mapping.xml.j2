@@ -1,0 +1,22 @@
+<user-mapping>
+    <authorize username="portal" password="portal">
+        <connection name="shell">
+            <protocol>ssh</protocol>
+            <param name="hostname">{{ guacamole_host_address }}</param>
+            <param name="port">22</param>
+            <param name="username">{{ guacamole_user }}</param>
+            <param name="private-key">{{ guacamole_ssh_private_key }}</param>
+            <param name="enable-sftp">true</param>
+        </connection>
+        {% if guacamole_desktop_enabled %}
+        <connection name="desktop">
+            <protocol>vnc</protocol>
+            <param name="hostname">{{ guacamole_host_address }}</param>
+            <param name="port">5901</param>
+            <param name="autoretry">3</param>
+            <param name="username">{{ guacamole_user }}</param>
+            <param name="password">{{ guacamole_user_vnc_password }}</param>
+        </connection>
+        {% endif %}
+    </authorize>
+</user-mapping>

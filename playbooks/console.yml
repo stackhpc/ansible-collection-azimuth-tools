@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  become: yes
+  vars_files:
+    - vars/openstack.yml
+  roles:
+    - guacamole
+    - role: tunnel-proxy
+      vars:
+        tunnel_proxy_name: guacamole-proxy
+        # Join the guacamole pod to access the guacamole client on localhost
+        tunnel_proxy_pod: guacamole
+        # Use a soft dependency on the client
+        tunnel_proxy_wants:
+          - guacamole-client
+        tunnel_proxy_forward_to_host: localhost
+        tunnel_proxy_forward_to_port: "8080"
+        tunnel_proxy_service_name: console

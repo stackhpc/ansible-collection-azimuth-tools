@@ -1,0 +1,10 @@
+---
+
+collections:
+  - ansible.posix
+  - containers.podman
+
+dependencies:
+  - role: vnc-server
+    when: guacamole_desktop_enabled
+  - role: podman

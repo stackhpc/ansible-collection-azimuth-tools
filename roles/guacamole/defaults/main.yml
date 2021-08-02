@@ -1,0 +1,24 @@
+---
+
+guacamole_image_prefix: guacamole
+
+guacamole_version: 1.3.0
+
+guacamole_server_image_name: guacd
+guacamole_server_image_tag: "{{ guacamole_version }}"
+guacamole_server_image: "{{ guacamole_image_prefix }}/{{ guacamole_server_image_name }}:{{ guacamole_server_image_tag }}"
+guacamole_server_image_pull: no
+
+guacamole_client_image_name: guacamole
+guacamole_client_image_tag: "{{ guacamole_version }}"
+guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
+guacamole_client_image_pull: no
+
+# By default, use the connecting user to run the guacamole services
+guacamole_user: "{{ ansible_user }}"
+
+# By default, use the address of the default interface to communicate with the host from containers
+guacamole_host_address: "{{ ansible_default_ipv4.address }}"
+
+# By default, the desktop is not enabled
+guacamole_desktop_enabled: no

@@ -1,0 +1,63 @@
+---
+
+#####
+## Tasks to set up the VNC server for the guacamole user
+#####
+
+- name: Get guacamole user info
+  user:
+    name: "{{ guacamole_user }}"
+    state: present
+  register: guacamole_user_info
+
+- name: Generate VNC server password for guacamole user
+  command: openssl rand -hex 32
+  changed_when: false
+  register: guacamole_user_vnc_password_gen
+
+- name: Set VNC server user facts for guacamole user
+  set_fact:
+    guacamole_user_vnc_config_dir: "{{ guacamole_user_info.home }}/.vnc"
+    guacamole_user_vnc_password: "{{ guacamole_user_vnc_password_gen.stdout | trim }}"
+
+- name: Ensure VNC user config directory exists
+  file:
+    path: "{{ guacamole_user_vnc_config_dir }}"
+    state: directory
+    owner: "{{ guacamole_user }}"
+
+- name: Create VNC password file
+  shell: echo "{{ guacamole_user_vnc_password }}" | vncpasswd -f > {{ guacamole_user_vnc_config_dir }}/passwd
+  become: yes
+  become_user: "{{ guacamole_user }}"
+
+- name: Ensure permissions on VNC password file
+  file:
+    path: "{{ guacamole_user_vnc_config_dir }}/passwd"
+    mode: "g=,o="
+
+- name: Write VNC user config overrides
+  copy:
+    dest: "{{ guacamole_user_vnc_config_dir }}/config"
+    # Listen on the gateway for the guacamole network only
+    content: |
+      interface={{ guacamole_network_gateway }}
+      localhost=no
+      rfbauth={{ guacamole_user_vnc_config_dir }}/passwd
+  become: yes
+  become_user: "{{ guacamole_user }}"
+
+- name: Restore SELinux context for .vnc directory
+  command: restorecon -RFv {{ guacamole_user_vnc_config_dir }}
+
+- name: Configure guacamole user as first VNC display
+  lineinfile:
+    path: /etc/tigervnc/vncserver.users
+    regexp: "^:1="
+    line: ":1={{ guacamole_user }}"
+
+- name: Start VNC server for guacamole user
+  service:
+    name: vncserver@:1
+    state: started
+    enabled: yes
