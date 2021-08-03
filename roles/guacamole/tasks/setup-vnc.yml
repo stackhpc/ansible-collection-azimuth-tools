@@ -39,9 +39,8 @@
 - name: Write VNC user config overrides
   copy:
     dest: "{{ guacamole_user_vnc_config_dir }}/config"
-    # Listen on the gateway for the guacamole network only
     content: |
-      interface={{ guacamole_network_gateway }}
+      interface={{ guacamole_host_address }}
       localhost=no
       rfbauth={{ guacamole_user_vnc_config_dir }}/passwd
   become: yes
