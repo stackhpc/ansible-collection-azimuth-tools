@@ -14,6 +14,9 @@ guacamole_client_image_tag: "{{ guacamole_version }}"
 guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
 guacamole_client_image_pull: no
 
+# The user to use to run containers using podman
+podman_service_user: podman
+
 # By default, use the connecting user to run the guacamole services
 guacamole_user: "{{ ansible_user }}"
 

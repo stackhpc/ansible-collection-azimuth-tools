@@ -35,8 +35,8 @@
     path: /etc/guacamole
     state: directory
     recurse: yes
-    owner: "{{ guacamole_user }}"
-    group: "{{ guacamole_user }}"
+    owner: "{{ podman_service_user }}"
+    group: "{{ podman_service_user }}"
 
 - name: Install and start guacamole client
   include_role:
