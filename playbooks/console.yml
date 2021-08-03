@@ -13,7 +13,6 @@
     - role: tunnel-proxy
       vars:
         tunnel_proxy_name: guacamole-proxy
-        tunnel_proxy_user: "{{ guacamole_user }}"
         # Join the guacamole pod to access the guacamole client on localhost
         tunnel_proxy_pod: guacamole
         # Use a soft dependency on the client

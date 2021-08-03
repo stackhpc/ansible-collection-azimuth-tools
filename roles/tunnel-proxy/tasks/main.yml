@@ -8,7 +8,6 @@
     podman_service_name: "{{ tunnel_proxy_name }}"
     podman_service_type: container
     podman_service_image: "{{ tunnel_proxy_image }}"
-    podman_service_user: "{{ tunnel_proxy_user }}"
     podman_service_pod: "{{ tunnel_proxy_pod }}"
     podman_service_wants: "{{ tunnel_proxy_wants }}"
     # Join the default and extra variables to get the environment

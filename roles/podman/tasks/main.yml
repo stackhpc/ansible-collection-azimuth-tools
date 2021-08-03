@@ -10,3 +10,8 @@
     src: podman-pod-infra-attach.sh
     dest: /usr/bin/
     mode: +x
+
+- name: Create podman user
+  user:
+    name: podman
+    home: /var/lib/podman

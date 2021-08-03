@@ -7,7 +7,6 @@
   vars:
     podman_service_name: guacamole
     podman_service_type: pod
-    podman_service_user: "{{ guacamole_user }}"
 
 - name: Install and start guacamole server
   include_role:
@@ -17,7 +16,6 @@
     podman_service_name: guacamole-server
     podman_service_type: container
     podman_service_image: "{{ guacamole_server_image }}"
-    podman_service_user: "{{ guacamole_user }}"
     podman_service_pod: guacamole
 
 - name: Set up SSH for guacamole user
@@ -48,7 +46,6 @@
     podman_service_name: guacamole-client
     podman_service_type: container
     podman_service_image: "{{ guacamole_client_image }}"
-    podman_service_user: "{{ guacamole_user }}"
     podman_service_pod: guacamole
     # Add a soft dependency on the server
     podman_service_wants:
