@@ -4,11 +4,16 @@
   become: yes
   vars_files:
     - vars/openstack.yml
+  vars:
+    # This playbook is designed to run as part of cloud-init using a local connection
+    # So we need to manually set the user
+    guacamole_user: centos
   roles:
     - guacamole
     - role: tunnel-proxy
       vars:
         tunnel_proxy_name: guacamole-proxy
+        tunnel_proxy_user: "{{ guacamole_user }}"
         # Join the guacamole pod to access the guacamole client on localhost
         tunnel_proxy_pod: guacamole
         # Use a soft dependency on the client
