@@ -14,8 +14,13 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-# Install Python3
-yum install -y git python3
+# Ensure git and Python3 are installed
+if command -v yum; then
+    yum install -y git python3
+else
+    apt-get update -y
+    apt-get install git python3
+fi
 
 # Create and activate a virtual environment for Ansible
 mkdir -p "$virtualenv_dir"
