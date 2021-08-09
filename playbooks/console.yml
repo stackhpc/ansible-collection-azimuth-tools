@@ -2,12 +2,26 @@
 
 - hosts: all
   become: yes
-  vars_files:
-    - vars/openstack.yml
-  vars:
-    # This playbook is designed to run as part of cloud-init using a local connection
-    # So we need to manually set the user
-    guacamole_user: centos
+  collections:
+    - stackhpc.cloud_portal_tools
+  pre_tasks:
+    # Include the variables for the OS distribution we are running on
+    # Note that we don't use first_found across the whole list of files because
+    # we want to include all the ones that apply, in the order in which they are defined
+    # However we do use first_found to handle the case where the file doesn't exist at all
+    - name: Include dynamic variables
+      include_vars: "{{ task_file }}"
+      vars:
+        task_file: "{{ lookup('first_found', lookup_params) }}"
+        lookup_params:
+          files: ["{{ item }}"]
+          skip: true
+      when: task_file
+      loop:
+        - vars/openstack.yml
+        - vars/{{ ansible_os_family }}.yml
+        - vars/{{ ansible_distribution }}.yml
+        - vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml
   roles:
     - guacamole
     - role: tunnel-proxy

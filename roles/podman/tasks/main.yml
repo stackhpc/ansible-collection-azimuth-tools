@@ -1,5 +1,17 @@
 ---
 
+- name: OS-specific pre-installation tasks
+  include_tasks: "{{ preinstall_tasks }}"
+  vars:
+    preinstall_tasks: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files:
+        - tasks/preinstall/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml
+        - tasks/preinstall/{{ ansible_distribution }}.yml
+        - tasks/preinstall/{{ ansible_os_family }}.yml
+      skip: true
+  when: preinstall_tasks
+
 - name: Install podman packages
   package:
     name: podman

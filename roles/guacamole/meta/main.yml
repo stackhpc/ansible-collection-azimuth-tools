@@ -6,5 +6,5 @@ collections:
 
 dependencies:
   - role: vnc-server
-    when: guacamole_desktop_enabled
+    when: guacamole_desktop_enabled | bool
   - role: podman
