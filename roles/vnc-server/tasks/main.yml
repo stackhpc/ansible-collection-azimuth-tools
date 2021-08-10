@@ -31,9 +31,21 @@
     name: "{{ tigervnc_server_package }}"
     state: present
 
-# CentOS includes a systemd unit, Ubuntu does not
-- name: Ensure vncserver systemd unit exists
+# CentOS includes a systemd unit and default startup script that work
+# Ubuntu does not
+- name: Configure VNC server
   block:
+    - name: Ensure VNC config directory exists
+      file:
+        path: /etc/vnc
+        state: directory
+
+    - name: Install VNC startup script
+      copy:
+        src: xstartup
+        dest: /etc/vnc/xstartup
+        mode: +x
+
     - name: Install vncserver systemd unit file
       copy:
         src: vncserver@.service
