@@ -10,18 +10,18 @@
     # we want to include all the ones that apply, in the order in which they are defined
     # However we do use first_found to handle the case where the file doesn't exist at all
     - name: Include dynamic variables
-      include_vars: "{{ task_file }}"
+      include_vars: "{{ vars_file }}"
       vars:
-        task_file: "{{ lookup('first_found', lookup_params) }}"
+        vars_file: "{{ lookup('first_found', lookup_params) }}"
         lookup_params:
           files: ["{{ item }}"]
           skip: true
-      when: task_file
+      when: vars_file
       loop:
-        - vars/openstack.yml
-        - vars/{{ ansible_os_family }}.yml
-        - vars/{{ ansible_distribution }}.yml
-        - vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml
+        - "{{ playbook_dir }}/vars/openstack.yml"
+        - "{{ playbook_dir }}/vars/{{ ansible_os_family }}.yml"
+        - "{{ playbook_dir }}/vars/{{ ansible_distribution }}.yml"
+        - "{{ playbook_dir }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   roles:
     - guacamole
     - role: tunnel-proxy

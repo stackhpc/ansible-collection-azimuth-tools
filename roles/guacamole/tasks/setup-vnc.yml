@@ -36,24 +36,61 @@
     path: "{{ guacamole_user_vnc_config_dir }}/passwd"
     mode: "g=,o="
 
-- name: Write VNC user config overrides
-  copy:
-    dest: "{{ guacamole_user_vnc_config_dir }}/config"
-    content: |
-      interface={{ guacamole_host_address }}
-      localhost=no
-      rfbauth={{ guacamole_user_vnc_config_dir }}/passwd
-  become: yes
-  become_user: "{{ guacamole_user }}"
+- name: Configure VNC server (RedHat)
+  block:
+    - name: Write VNC configuration
+      copy:
+        dest: "{{ guacamole_user_vnc_config_dir }}/config"
+        content: |
+          interface={{ guacamole_host_address }}
+          localhost=no
+          rfbauth={{ guacamole_user_vnc_config_dir }}/passwd
+          session=gnome
+          MaxCutText=99999999
+      become: yes
+      become_user: "{{ guacamole_user }}"
 
-- name: Restore SELinux context for .vnc directory
-  command: restorecon -RFv {{ guacamole_user_vnc_config_dir }}
+    - name: Add guacamole user to displays
+      lineinfile:
+        path: /etc/tigervnc/vncserver.users
+        regexp: "^:1="
+        line: ":1={{ guacamole_user }}"
+        create: yes
 
-- name: Configure guacamole user as first VNC display
-  lineinfile:
-    path: /etc/tigervnc/vncserver.users
-    regexp: "^:1="
-    line: ":1={{ guacamole_user }}"
+    - name: Restore SELinux context for .vnc directory
+      command: restorecon -RFv {{ guacamole_user_vnc_config_dir }}
+  when: ansible_os_family == "RedHat"
+
+- name: Configure VNC server (Ubuntu)
+  block:
+    # This file is run to start the Gnome session for the VNC server
+    - name: Install xstartup file
+      copy:
+        dest: "{{ guacamole_user_vnc_config_dir }}/xstartup"
+        content: |
+          #!/bin/bash
+          PATH=/usr/bin:/usr/sbin
+          unset SESSION_MANAGER
+          unset DBUS_SESSION_BUS_ADDRESS
+          exec /usr/bin/gnome-session --session=gnome
+        owner: "{{ guacamole_user }}"
+        group: "{{ guacamole_user }}"
+        mode: "+x"
+
+    - name: Ensure systemd overrides directory exists
+      file:
+        path: /etc/systemd/system/vncserver@:1.service.d
+        state: directory
+
+    - name: Configure guacamole as user for systemd unit
+      template:
+        src: vncserver-user.conf
+        dest: /etc/systemd/system/vncserver@:1.service.d/user.conf
+
+    - name: Reload systemd units
+      systemd:
+        daemon_reload: yes
+  when: ansible_os_family != "RedHat"
 
 - name: Start VNC server for guacamole user
   service:

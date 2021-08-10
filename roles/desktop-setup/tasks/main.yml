@@ -4,12 +4,34 @@
 ## These tasks set up a graphical environment for use with a VNC server
 ##
 ## Mostly borrowed from the exosphere project
-## https://github.com/exosphere-project/exosphere/blob/master/ansible/roles/desktop-setup/tasks/main.yml
+## https://github.com/exosphere-project/exosphere/
 #####
+
+# Include the variables for the OS distribution we are running on
+# Note that we don't use first_found across the whole list of files because
+# we want to include all the ones that apply, in the order in which they are defined
+# However we do use first_found to handle the case where the file doesn't exist at all
+- name: Include OS-specific variables
+  include_vars: "{{ vars_file }}"
+  vars:
+    vars_file: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files: ["{{ item }}"]
+      skip: true
+  when: vars_file
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
 
 - name: Install graphical environment
   package:
-    name: '@workstation'
+    name: "{{ desktop_environment_package }}"
     state: present
 
 - name: Enable graphical environment
@@ -27,9 +49,15 @@
   lineinfile:
     line: "{{ item }}"
     path: /etc/dconf/profile/user
+    create: yes
   loop:
     - user-db:user
     - system-db:local
+
+- name: Ensure dconf db directory exists
+  file:
+    path: /etc/dconf/db/local.d/locks
+    state: directory
 
 - name: Disable screen lock
   copy:

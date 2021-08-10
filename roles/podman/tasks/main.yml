@@ -9,6 +9,7 @@
         - tasks/preinstall/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml
         - tasks/preinstall/{{ ansible_distribution }}.yml
         - tasks/preinstall/{{ ansible_os_family }}.yml
+      # If none of those exist for the current OS, that is fine
       skip: true
   when: preinstall_tasks
 

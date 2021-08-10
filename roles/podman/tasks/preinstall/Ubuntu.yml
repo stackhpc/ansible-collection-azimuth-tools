@@ -1,0 +1,13 @@
+---
+
+# These tasks apply to all Ubuntu versions without an explicit set of tasks
+# In particular, they are designed to apply to Ubuntu versions >= 20.10
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install runc
+  package:
+    name: runc
+    state: present

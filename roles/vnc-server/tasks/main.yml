@@ -4,17 +4,41 @@
 ## These tasks install TigerVNC server and perform global configuration
 #####
 
+# Include the variables for the OS distribution we are running on
+# Note that we don't use first_found across the whole list of files because
+# we want to include all the ones that apply, in the order in which they are defined
+# However we do use first_found to handle the case where the file doesn't exist at all
+- name: Include OS-specific variables
+  include_vars: "{{ vars_file }}"
+  vars:
+    vars_file: "{{ lookup('first_found', lookup_params) }}"
+    lookup_params:
+      files: ["{{ item }}"]
+      skip: true
+  when: vars_file
+  loop:
+    - "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}.yml"
+    - "{{ role_path }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
 - name: Install VNC server
   package:
-    name: tigervnc-server
+    name: "{{ tigervnc_server_package }}"
     state: present
 
-- name: Write mandatory configuration
-  blockinfile:
-    path: /etc/tigervnc/vncserver-config-mandatory
-    block: |
-      session=gnome
-      MaxCutText=99999999
+# CentOS includes a systemd unit, Ubuntu does not
+- name: Ensure vncserver systemd unit exists
+  block:
+    - name: Install vncserver systemd unit file
+      copy:
+        src: vncserver@.service
+        dest: /etc/systemd/system/
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Ensure systemd override directory exists
   file:
@@ -28,9 +52,7 @@
   loop:
     - start_order.conf
     - restart.conf
-  register: vnc_server_start_order
 
 - name: Force systemd to reload units
   systemd:
     daemon_reload: yes
-  when: vnc_server_start_order is changed

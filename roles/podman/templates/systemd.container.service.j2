@@ -24,6 +24,9 @@ ExecStart=/usr/bin/podman run \
     --replace \
     --restart=no \
     --name {{ podman_service_name }} \
+{% if podman_service_network is defined %}
+    --network {{ podman_service_network }} \
+{% endif %}
 {% if podman_service_pod is defined %}
     --pod {{ podman_service_pod }} \
 {% endif %}
