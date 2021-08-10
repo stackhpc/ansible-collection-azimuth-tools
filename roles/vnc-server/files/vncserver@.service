@@ -4,7 +4,6 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-PAMName=login
 ExecStartPre=/bin/sh -c '/usr/bin/vncserver -kill %i > /dev/null 2>&1 || :'
 ExecStop=/usr/bin/vncserver -kill %i
 

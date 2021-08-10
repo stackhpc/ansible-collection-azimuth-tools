@@ -64,18 +64,18 @@
 - name: Configure VNC server (Ubuntu)
   block:
     # This file is run to start the Gnome session for the VNC server
-    # - name: Install xstartup file
-    #   copy:
-    #     dest: "{{ guacamole_user_vnc_config_dir }}/xstartup"
-    #     content: |
-    #       #!/bin/bash
-    #       PATH=/usr/bin:/usr/sbin
-    #       unset SESSION_MANAGER
-    #       unset DBUS_SESSION_BUS_ADDRESS
-    #       exec /usr/bin/gnome-session --session=gnome
-    #     owner: "{{ guacamole_user }}"
-    #     group: "{{ guacamole_user }}"
-    #     mode: "+x"
+    - name: Install xstartup file
+      copy:
+        dest: "{{ guacamole_user_vnc_config_dir }}/xstartup"
+        content: |
+          #!/bin/bash
+          PATH=/usr/bin:/usr/sbin
+          unset SESSION_MANAGER
+          unset DBUS_SESSION_BUS_ADDRESS
+          exec /usr/bin/gnome-session --session=gnome
+        owner: "{{ guacamole_user }}"
+        group: "{{ guacamole_user }}"
+        mode: "+x"
 
     - name: Ensure systemd overrides directory exists
       file:
