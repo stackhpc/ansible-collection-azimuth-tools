@@ -1,0 +1,14 @@
+---
+
+- name: Install and start Zenith client
+  include_role:
+    name: podman
+    tasks_from: install-systemd-unit
+  vars:
+    podman_service_name: "{{ zenith_client_name }}"
+    podman_service_type: container
+    podman_service_image: "{{ zenith_client_image }}"
+    podman_service_pod: "{{ zenith_client_pod }}"
+    podman_service_wants: "{{ zenith_client_wants }}"
+    # Join the default and extra variables to get the environment
+    podman_service_env: "{{ zenith_client_environment_default | combine(zenith_client_environment) }}"

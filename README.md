@@ -1,4 +1,4 @@
-# Ansible Collection - stackhpc.cloud_portal_tools
+# Ansible Collection - stackhpc.azimuth_tools
 
-Collection of Ansible roles and playbooks to deploy tools onto hosts created by the
-[cloud portal](https://github.com/stackhpc/jasmin-cloud).
+Collection of Ansible roles and playbooks to deploy tools onto hosts created by
+[Azimuth](https://github.com/stackhpc/azimuth).

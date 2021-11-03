@@ -3,7 +3,7 @@
 - hosts: all
   become: yes
   collections:
-    - stackhpc.cloud_portal_tools
+    - stackhpc.azimuth_tools
   pre_tasks:
     # Include the variables for the OS distribution we are running on
     # Note that we don't use first_found across the whole list of files because
@@ -24,14 +24,13 @@
         - "{{ playbook_dir }}/vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
   roles:
     - guacamole
-    - role: tunnel-proxy
+    - role: zenith-client
       vars:
-        tunnel_proxy_name: guacamole-proxy
+        zenith_client_name: guacamole-proxy
         # Join the guacamole pod to access the guacamole client on localhost
-        tunnel_proxy_pod: guacamole
+        zenith_client_pod: guacamole
         # Use a soft dependency on the client
-        tunnel_proxy_wants:
+        zenith_client_wants:
           - guacamole-client
-        tunnel_proxy_forward_to_host: localhost
-        tunnel_proxy_forward_to_port: "8080"
-        tunnel_proxy_service_name: console
+        zenith_client_forward_to_host: localhost
+        zenith_client_forward_to_port: "8080"

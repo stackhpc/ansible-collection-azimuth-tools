@@ -1,0 +1,23 @@
+---
+
+zenith_client_image_prefix: ghcr.io/stackhpc
+zenith_client_image_name: zenith-client
+zenith_client_image_tag: main
+zenith_client_image: "{{ zenith_client_image_prefix }}/{{ zenith_client_image_name }}:{{ zenith_client_image_tag }}"
+zenith_client_image_pull: yes
+
+# By default, we don't use join a pod
+zenith_client_pod: "{{ omit }}"
+# By default, the service has no dependencies
+zenith_client_wants: []
+
+# The environment variables for the tunnel proxy
+zenith_client_environment_default:
+  # Require other variables to be present for these environment variables
+  ZENITH_CLIENT__SERVER_ADDRESS: "{{ zenith_client_sshd_host }}"
+  ZENITH_CLIENT__SERVER_PORT: "{{ zenith_client_sshd_port }}"
+  ZENITH_CLIENT__FORWARD_TO_HOST: "{{ zenith_client_forward_to_host }}"
+  ZENITH_CLIENT__FORWARD_TO_PORT: "{{ zenith_client_forward_to_port }}"
+  ZENITH_CLIENT__SUBDOMAIN: "{{ zenith_client_subdomain }}"
+
+zenith_client_environment: {}

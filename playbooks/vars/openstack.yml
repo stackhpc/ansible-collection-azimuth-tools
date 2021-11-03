@@ -6,16 +6,8 @@ _openstack_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/
 # Determine whether the desktop is enabled
 guacamole_desktop_enabled: "{{ (_openstack_metadata.meta.portal_desktop_enabled | default('0')) == '1' }}"
 
-# Get the app proxy SSHD host and port from the metadata
-tunnel_proxy_sshd_host: "{{ _openstack_metadata.meta.portal_app_proxy_sshd_host }}"
-tunnel_proxy_sshd_port: "{{ _openstack_metadata.meta.portal_app_proxy_sshd_port }}"
-
-# The subdomain to use is a hash of the project id, instance id and service name
-# Because DNS requires subdomains to be < 64 characters, which is the length of a SHA256 hash, we use SHA1
-tunnel_proxy_subdomain: "{{ (_openstack_metadata.project_id + _openstack_metadata.uuid + tunnel_proxy_service_name) | hash('sha1') }}"
-
-# By default use the project id, instance id and service name as metadata
-tunnel_proxy_environment:
-  TUNNEL_META_OPENSTACK_PROJECT_ID: "{{ _openstack_metadata.project_id }}"
-  TUNNEL_META_OPENSTACK_INSTANCE_ID: "{{ _openstack_metadata.uuid }}"
-  TUNNEL_META_SERVICE_NAME: "{{ tunnel_proxy_service_name }}"
+# Get the Zenith client version, SSHD host/port and the subdomain to use from the metadata
+zenith_client_image_tag: "{{ _openstack_metadata.meta.portal_apps_client_tag | default('main') }}"
+zenith_client_sshd_host: "{{ _openstack_metadata.meta.portal_apps_sshd_host }}"
+zenith_client_sshd_port: "{{ _openstack_metadata.meta.portal_apps_sshd_port }}"
+zenith_client_subdomain: "{{ _openstack_metadata.meta.portal_apps_subdomain }}"
