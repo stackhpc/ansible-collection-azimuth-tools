@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Template the Nginx configuration file into a directory that we know is writable
+gomplate --file /etc/nginx/nginx.conf --out /var/run/nginx/nginx.conf
+
+# Run Nginx using that configuration file
+nginx -c /var/run/nginx/nginx.conf

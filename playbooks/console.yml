@@ -26,11 +26,12 @@
     - guacamole
     - role: zenith-client
       vars:
-        zenith_client_name: guacamole-proxy
+        zenith_client_name: guacamole-zenith-client
         # Join the guacamole pod to access the guacamole client on localhost
         zenith_client_pod: guacamole
-        # Use a soft dependency on the client
+        # Use a soft dependency on the mitm
         zenith_client_wants:
-          - guacamole-client
+          - guacamole-mitm
+        # Forward traffic to the MITM proxy
         zenith_client_forward_to_host: localhost
-        zenith_client_forward_to_port: "8080"
+        zenith_client_forward_to_port: "8081"

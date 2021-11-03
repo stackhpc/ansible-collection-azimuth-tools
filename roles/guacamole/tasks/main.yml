@@ -56,3 +56,16 @@
     podman_service_volumes:
       - /etc/guacamole:/config:ro
     podman_service_restart: yes
+
+- name: Install and start guacamole mitm
+  include_role:
+    name: podman
+    tasks_from: install-systemd-unit
+  vars:
+    podman_service_name: guacamole-mitm
+    podman_service_type: container
+    podman_service_image: "{{ guacamole_mitm_image }}"
+    podman_service_pod: guacamole
+    # Add a soft dependency on the client
+    podman_service_wants:
+      - guacamole-client

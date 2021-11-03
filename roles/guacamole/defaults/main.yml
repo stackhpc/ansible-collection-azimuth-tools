@@ -1,6 +1,6 @@
 ---
 
-guacamole_image_prefix: guacamole
+guacamole_image_prefix: ghcr.io/stackhpc
 
 guacamole_version: 1.3.0
 
@@ -13,6 +13,11 @@ guacamole_client_image_name: guacamole
 guacamole_client_image_tag: "{{ guacamole_version }}"
 guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_name }}:{{ guacamole_client_image_tag }}"
 guacamole_client_image_pull: no
+
+guacamole_mitm_image_name: azimuth-guacamole-mitm
+guacamole_mitm_image_tag: dev
+guacamole_mitm_image: "{{ guacamole_image_prefix }}/{{ guacamole_mitm_image_name }}:{{ guacamole_mitm_image_tag }}"
+guacamole_mitm_image_pull: no
 
 # The user to use to run containers using podman
 podman_service_user: podman
