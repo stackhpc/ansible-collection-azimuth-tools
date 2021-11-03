@@ -10,4 +10,4 @@ guacamole_desktop_enabled: "{{ (_openstack_metadata.meta.portal_desktop_enabled 
 zenith_client_image_tag: "{{ _openstack_metadata.meta.portal_apps_client_tag | default('main') }}"
 zenith_client_sshd_host: "{{ _openstack_metadata.meta.portal_apps_sshd_host }}"
 zenith_client_sshd_port: "{{ _openstack_metadata.meta.portal_apps_sshd_port }}"
-zenith_client_subdomain: "{{ _openstack_metadata.meta.portal_apps_subdomain }}"
+zenith_client_subdomain: "{{ _openstack_metadata.meta.portal_apps_console_subdomain }}"
