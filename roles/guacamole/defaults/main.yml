@@ -15,7 +15,7 @@ guacamole_client_image: "{{ guacamole_image_prefix }}/{{ guacamole_client_image_
 guacamole_client_image_pull: no
 
 guacamole_mitm_image_name: azimuth-guacamole-mitm
-guacamole_mitm_image_tag: dev
+guacamole_mitm_image_tag: main
 guacamole_mitm_image: "{{ guacamole_image_prefix }}/{{ guacamole_mitm_image_name }}:{{ guacamole_mitm_image_tag }}"
 guacamole_mitm_image_pull: no
 
