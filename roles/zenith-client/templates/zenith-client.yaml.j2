@@ -1,0 +1,16 @@
+ssh_identity_path: /etc/zenith/ssh/id_zenith
+
+# Init options
+registrar_url: "{{ zenith_client_registrar_url }}"
+token: "{{ zenith_client_registrar_token }}"
+
+# Connect options
+server_address: "{{ zenith_client_sshd_host }}"
+server_port: {{ zenith_client_sshd_port }}
+forward_to_host: "{{ zenith_client_forward_to_host }}"
+forward_to_port: {{ zenith_client_forward_to_port }}
+
+# Extra options
+{% if zenith_client_extra_options %}
+{{ zenith_client_extra_options | to_nice_yaml }}
+{% endif %}
