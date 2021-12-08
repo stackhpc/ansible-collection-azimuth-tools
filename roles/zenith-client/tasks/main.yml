@@ -13,6 +13,8 @@
 - name: Create podman volume to persist SSH key
   podman_volume:
     name: "{{ zenith_client_name }}-ssh"
+  become: yes
+  become_user: podman
 
 - name: Initialise Zenith client
   podman_container:
