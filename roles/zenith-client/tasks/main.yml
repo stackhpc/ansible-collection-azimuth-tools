@@ -4,28 +4,33 @@
   file:
     path: /etc/zenith/{{ zenith_client_name }}/ssh
     state: directory
+    owner: podman
+    group: podman
 
-- name: Write Zenith client configuration
-  template:
-    src: zenith-client.yaml.j2
-    dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
+- block:
+    - name: Write Zenith client configuration
+      template:
+        src: zenith-client.yaml.j2
+        dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
 
-- name: Check if Zenith client SSH identity exists
-  stat:
-    path: /etc/zenith/{{ zenith_client_name }}/ssh/id_zenith.pub
-  register: zenith_client_ssh_id
+    - name: Check if Zenith client SSH identity exists
+      stat:
+        path: /etc/zenith/{{ zenith_client_name }}/ssh/id_zenith.pub
+      register: zenith_client_ssh_id
 
-- name: Initialise Zenith client
-  podman_container:
-    name: "{{ zenith_client_name }}-init"
-    image: "{{ zenith_client_image }}"
-    command: [zenith-client, init]
-    detach: no
-    volumes:
-      - /etc/zenith/{{ zenith_client_name }}:/etc/zenith
+    - name: Initialise Zenith client
+      podman_container:
+        name: "{{ zenith_client_name }}-init"
+        image: "{{ zenith_client_image }}"
+        command: [zenith-client, init]
+        detach: no
+        volumes:
+          - /etc/zenith/{{ zenith_client_name }}:/etc/zenith
+      become: yes
+      become_user: podman
+      when: "not zenith_client_ssh_id.stat.exists"
   become: yes
   become_user: podman
-  when: "not zenith_client_ssh_id.stat.exists"
 
 - name: Start Zenith client
   include_role:
@@ -39,4 +44,4 @@
     podman_service_image: "{{ zenith_client_image }}"
     podman_service_command: "zenith-client connect"
     podman_service_volumes:
-      - /etc/zenith/{{ zenith_client_name }}:/etc/zenith
+      - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
