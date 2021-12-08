@@ -2,33 +2,27 @@
 
 - name: Ensure Zenith config directory exists
   file:
-    path: /etc/zenith/{{ zenith_client_name }}/ssh
+    path: /etc/zenith/{{ zenith_client_name }}
     state: directory
-    owner: podman
-    group: podman
 
-- block:
-    - name: Write Zenith client configuration
-      template:
-        src: zenith-client.yaml.j2
-        dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
+- name: Write Zenith client configuration
+  template:
+    src: zenith-client.yaml.j2
+    dest: /etc/zenith/{{ zenith_client_name }}/client.yaml
 
-    - name: Check if Zenith client SSH identity exists
-      stat:
-        path: /etc/zenith/{{ zenith_client_name }}/ssh/id_zenith.pub
-      register: zenith_client_ssh_id
+- name: Create podman volume to persist SSH key
+  podman_volume:
+    name: "{{ zenith_client_name }}-ssh"
 
-    - name: Initialise Zenith client
-      podman_container:
-        name: "{{ zenith_client_name }}-init"
-        image: "{{ zenith_client_image }}"
-        command: [zenith-client, init]
-        detach: no
-        volumes:
-          - /etc/zenith/{{ zenith_client_name }}:/etc/zenith
-      become: yes
-      become_user: podman
-      when: "not zenith_client_ssh_id.stat.exists"
+- name: Initialise Zenith client
+  podman_container:
+    name: "{{ zenith_client_name }}-init"
+    image: "{{ zenith_client_image }}"
+    command: [zenith-client, init]
+    detach: no
+    volumes:
+      - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
+      - "{{ zenith_client_name }}-ssh:/etc/zenith/ssh"
   become: yes
   become_user: podman
 
@@ -45,3 +39,4 @@
     podman_service_command: "zenith-client connect"
     podman_service_volumes:
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
+      - "{{ zenith_client_name }}-ssh:/etc/zenith/ssh:ro"
