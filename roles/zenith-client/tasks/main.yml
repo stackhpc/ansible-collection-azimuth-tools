@@ -24,7 +24,7 @@
     detach: no
     volumes:
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
-      - "{{ zenith_client_name }}-ssh:/etc/zenith/ssh"
+      - "{{ zenith_client_name }}-ssh:/home/zenith/.ssh"
   become: yes
   become_user: podman
 
@@ -41,4 +41,4 @@
     podman_service_command: "zenith-client connect"
     podman_service_volumes:
       - /etc/zenith/{{ zenith_client_name }}:/etc/zenith:ro
-      - "{{ zenith_client_name }}-ssh:/etc/zenith/ssh:ro"
+      - "{{ zenith_client_name }}-ssh:/home/zenith/.ssh:ro"
