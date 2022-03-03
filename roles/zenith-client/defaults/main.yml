@@ -11,5 +11,8 @@ zenith_client_pod: "{{ omit }}"
 # By default, the service has no dependencies
 zenith_client_wants: []
 
+# By default, verify SSL certificates
+zenith_client_registrar_verify_ssl: true
+
 # Extra options for the Zenith client
 zenith_client_extra_options: {}

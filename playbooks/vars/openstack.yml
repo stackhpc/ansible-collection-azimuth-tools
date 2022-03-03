@@ -10,6 +10,7 @@ guacamole_desktop_enabled: "{{ (_openstack_metadata.meta.portal_desktop_enabled 
 zenith_client_image_tag: "{{ _openstack_metadata.meta.portal_apps_client_tag | default('main') }}"
 zenith_client_registrar_url: "{{ _openstack_metadata.meta.portal_apps_registrar_url }}"
 zenith_client_registrar_token: "{{ _openstack_metadata.meta.portal_apps_registrar_token }}"
+zenith_client_registrar_verify_ssl: "{{ _openstack_metadata.meta.portal_apps_registrar_verify_ssl | default(True) }}"
 zenith_client_sshd_host: "{{ _openstack_metadata.meta.portal_apps_sshd_host }}"
 zenith_client_sshd_port: "{{ _openstack_metadata.meta.portal_apps_sshd_port }}"
 # Add current cloud and the openstack project ID as auth parameters
