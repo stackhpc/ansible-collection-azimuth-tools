@@ -7,14 +7,42 @@ _openstack_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/
 guacamole_desktop_enabled: "{{ (_openstack_metadata.meta.portal_desktop_enabled | default('0')) == '1' }}"
 
 # Get the Zenith client version, the SSHD host/port and the registrar URL and token to use from the metadata
-zenith_client_image_tag: "{{ _openstack_metadata.meta.portal_apps_client_tag | default('main') }}"
-zenith_client_registrar_url: "{{ _openstack_metadata.meta.portal_apps_registrar_url }}"
-zenith_client_registrar_token: "{{ _openstack_metadata.meta.portal_apps_registrar_token }}"
-zenith_client_registrar_verify_ssl: "{{ _openstack_metadata.meta.portal_apps_registrar_verify_ssl | default(True) }}"
-zenith_client_sshd_host: "{{ _openstack_metadata.meta.portal_apps_sshd_host }}"
-zenith_client_sshd_port: "{{ _openstack_metadata.meta.portal_apps_sshd_port }}"
+zenith_client_image_tag: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_client_tag |
+      default(_openstack_metadata.meta.portal_apps_client_tag | default('main'))
+  }}
+zenith_client_registrar_url: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_registrar_url |
+      default(_openstack_metadata.meta.portal_apps_registrar_url)
+  }}
+zenith_client_registrar_token: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_registrar_token |
+      default(_openstack_metadata.meta.portal_apps_registrar_token)
+  }}
+zenith_client_registrar_verify_ssl: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_registrar_verify_ssl |
+      default(_openstack_metadata.meta.portal_apps_registrar_verify_ssl | default(True))
+  }}
+zenith_client_sshd_host: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_sshd_host |
+      default(_openstack_metadata.meta.portal_apps_sshd_host)
+  }}
+zenith_client_sshd_port: >-
+  {{
+    _openstack_metadata.meta.azimuth_apps_sshd_port |
+      default(_openstack_metadata.meta.portal_apps_sshd_port)
+  }}
 # Add current cloud and the openstack project ID as auth parameters
 zenith_client_extra_options:
   auth_params:
-    cloud-name: "{{ _openstack_metadata.meta.portal_cloud_name }}"
+    cloud-name: >-
+      {{
+        _openstack_metadata.meta.azimuth_cloud_name |
+          default(_openstack_metadata.meta.portal_cloud_name)
+      }}
     tenancy-id: "{{ _openstack_metadata.project_id }}"
