@@ -4,7 +4,13 @@
 _openstack_metadata: "{{ lookup('url', 'http://169.254.169.254/openstack/latest/meta_data.json') | from_json }}"
 
 # Determine whether the desktop is enabled
-guacamole_desktop_enabled: "{{ (_openstack_metadata.meta.portal_desktop_enabled | default('0')) == '1' }}"
+guacamole_desktop_enabled: >-
+  {{
+    (
+      _openstack_metadata.meta.azimuth_desktop_enabled |
+        default(_openstack_metadata.meta.portal_desktop_enabled | default('0'))
+    ) == '1'
+  }}
 
 # Get the Zenith client version, the SSHD host/port and the registrar URL and token to use from the metadata
 zenith_client_image_tag: >-
